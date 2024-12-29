@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import mongoose from "mongoose";
 import authRoutes from "./routes/auth.js";
+import draftRoutes from "./routes/drafts.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -21,7 +22,7 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Routes
 app.use('/auth', authRoutes);
-
+app.use('/drafts', draftRoutes);
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
