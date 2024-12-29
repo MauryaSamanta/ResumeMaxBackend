@@ -3,15 +3,18 @@ import Drafts from "../models/Drafts.js";
 const router = express.Router();
 
 router.post ('/save', async (req, res) => {
-    const { name, textboxes, shapes, icons, creator_id } = req.body;
+    const { id, name, textboxes, shapes, icons, creator_id } = req.body;
    // const creator_id = req.user._id; // Assuming you're using authentication middleware to set `req.user`
    console.log(req.body);
     if (!name) {
       return res.status(400).json({ error: "Draft name is required." });
     }
-  
+    
     try {
-      const newDraft = new Drafts({
+        let draft=await Drafts.findById(id);
+        console.log(draft);
+        if(!draft)
+      {const newDraft = new Drafts({
         name,
         creator_id,
         textboxes: textboxes || [],
@@ -20,7 +23,17 @@ router.post ('/save', async (req, res) => {
       });
   
       const savedDraft = await newDraft.save();
-      res.status(201).json({ message: "Draft created successfully.", draft: savedDraft });
+      res.status(201).json({ message: "Draft created successfully.", draft: savedDraft });}
+      else
+      {
+        draft.name=name;
+        draft.creator_id=creator_id;
+        draft.textboxes=textboxes;
+        draft.shapes=shapes;
+        draft.icons=icons;
+        await draft.save();
+        res.status(201).json({ message: "Draft created successfully.", draft: draft });
+      }
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Failed to create draft. Please try again later." });
